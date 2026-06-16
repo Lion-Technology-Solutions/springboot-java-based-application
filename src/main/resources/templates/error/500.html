@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service issue | LionTech Resorts</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<main class="auth-shell">
+    <section class="auth-panel">
+        <p class="eyebrow">Service notice</p>
+        <h1>Something needs attention.</h1>
+        <p th:text="${message ?: 'Please try again or contact the global guest desk.'}">Please try again.</p>
+        <a class="button primary" th:href="@{/rooms}">View rooms</a>
+    </section>
+</main>
+</body>
+</html>

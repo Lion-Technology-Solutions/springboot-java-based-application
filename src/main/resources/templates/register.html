@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create account | LionTech Resorts</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">LionTech Resorts</a>
+    <nav>
+        <a th:href="@{/rooms}">Rooms</a>
+        <a th:href="@{/facilities}">Facilities</a>
+        <a th:href="@{/login}">Sign in</a>
+    </nav>
+</header>
+<main class="auth-shell">
+    <section class="auth-panel wide-panel">
+        <p class="eyebrow">Worldwide reservations</p>
+        <h1>Create your account</h1>
+        <form th:action="@{/register}" th:object="${registerRequest}" method="post" class="form-grid two-col">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <label>First name
+                <input th:field="*{firstName}" autocomplete="given-name" required>
+                <span class="field-error" th:errors="*{firstName}"></span>
+            </label>
+            <label>Last name
+                <input th:field="*{lastName}" autocomplete="family-name" required>
+                <span class="field-error" th:errors="*{lastName}"></span>
+            </label>
+            <label>Email
+                <input th:field="*{email}" type="email" autocomplete="email" required>
+                <span class="field-error" th:errors="*{email}"></span>
+            </label>
+            <label>Password
+                <input th:field="*{password}" type="password" autocomplete="new-password" required>
+                <span class="field-error" th:errors="*{password}"></span>
+            </label>
+            <label>Country
+                <select th:field="*{country}" required>
+                    <option value="">Select country</option>
+                    <option th:each="country : ${supportedCountries}" th:value="${country}" th:text="${country}"></option>
+                </select>
+                <span class="field-error" th:errors="*{country}"></span>
+            </label>
+            <label>Preferred language
+                <select th:field="*{preferredLanguage}" required>
+                    <option th:each="language : ${supportedLanguages}" th:value="${language.code()}" th:text="${language.name()}"></option>
+                </select>
+                <span class="field-error" th:errors="*{preferredLanguage}"></span>
+            </label>
+            <button class="button primary full" type="submit">Create account</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>

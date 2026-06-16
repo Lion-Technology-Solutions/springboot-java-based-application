@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facilities | LionTech Resorts</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">LionTech Resorts</a>
+    <nav>
+        <a th:href="@{/rooms}">Rooms</a>
+        <a th:href="@{/facilities}">Facilities</a>
+        <a sec:authorize="isAuthenticated()" th:href="@{/account/bookings}">My bookings</a>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/login}">Sign in</a>
+    </nav>
+</header>
+<main class="page-shell">
+    <div class="page-title">
+        <p class="eyebrow">Services and spaces</p>
+        <h1>Facilities</h1>
+        <p>Dining, wellness, business, travel, and leisure services for guests arriving from any region.</p>
+    </div>
+    <div class="facility-grid">
+        <article class="facility-tile" th:each="facility : ${facilities}">
+            <span th:text="${facility.category}">Wellness</span>
+            <h2 th:text="${facility.name}">Facility</h2>
+            <p th:text="${facility.description}">Description</p>
+            <strong th:text="${facility.hours}">Hours</strong>
+        </article>
+    </div>
+</main>
+</body>
+</html>

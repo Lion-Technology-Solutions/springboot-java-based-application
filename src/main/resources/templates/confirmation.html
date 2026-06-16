@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmed | LionTech Resorts</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">LionTech Resorts</a>
+    <nav>
+        <a th:href="@{/rooms}">Rooms</a>
+        <a th:href="@{/account/bookings}">My bookings</a>
+    </nav>
+</header>
+<main class="page-shell narrow">
+    <section class="confirmation-panel">
+        <p class="eyebrow">Reservation confirmed</p>
+        <h1 th:text="${booking.reference}">LTR-REFERENCE</h1>
+        <p>Your LionTech Resorts stay is confirmed. Our global guest desk will support your arrival, language preference, and special requests.</p>
+        <dl class="spec-list">
+            <div><dt>Room</dt><dd th:text="${booking.room.name}">Room</dd></div>
+            <div><dt>Dates</dt><dd th:text="${booking.checkInDate + ' to ' + booking.checkOutDate}">Dates</dd></div>
+            <div><dt>Payment</dt><dd th:text="${latestPayment != null ? latestPayment.maskedCard : 'Pending'}">****</dd></div>
+            <div><dt>Total</dt><dd th:text="${booking.currency + ' ' + booking.totalAmount}">USD 658</dd></div>
+        </dl>
+        <a class="button primary" th:href="@{/account/bookings}">View my bookings</a>
+    </section>
+</main>
+</body>
+</html>

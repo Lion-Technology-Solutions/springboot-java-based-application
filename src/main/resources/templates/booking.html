@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book room | LionTech Resorts</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">LionTech Resorts</a>
+    <nav>
+        <a th:href="@{/rooms}">Rooms</a>
+        <a sec:authorize="isAuthenticated()" th:href="@{/account/bookings}">My bookings</a>
+    </nav>
+</header>
+<main class="page-shell">
+    <section class="checkout-layout">
+        <aside class="summary-card">
+            <img th:src="${room.imageUrl}" th:alt="${room.name}">
+            <h2 th:text="${room.name}">Room</h2>
+            <p th:text="${room.description}">Description</p>
+            <strong th:text="${room.currency + ' ' + room.nightlyRate + ' / night'}">USD 329 / night</strong>
+        </aside>
+        <section class="form-panel">
+            <p class="eyebrow">Reservation details</p>
+            <h1>Book from anywhere</h1>
+            <form th:action="@{/bookings}" th:object="${bookingRequest}" method="post" class="form-grid two-col">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" th:field="*{roomId}">
+                <div class="error full" th:if="${#fields.hasGlobalErrors()}">
+                    <p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Error</p>
+                </div>
+                <label>Check in
+                    <input th:field="*{checkInDate}" type="date" required>
+                    <span class="field-error" th:errors="*{checkInDate}"></span>
+                </label>
+                <label>Check out
+                    <input th:field="*{checkOutDate}" type="date" required>
+                    <span class="field-error" th:errors="*{checkOutDate}"></span>
+                </label>
+                <label>Guests
+                    <input th:field="*{guests}" type="number" min="1" th:max="${room.maxGuests}" required>
+                    <span class="field-error" th:errors="*{guests}"></span>
+                </label>
+                <label>Country of residence
+                    <select th:field="*{countryOfResidence}" required>
+                        <option value="">Select country</option>
+                        <option th:each="country : ${supportedCountries}" th:value="${country}" th:text="${country}"></option>
+                    </select>
+                    <span class="field-error" th:errors="*{countryOfResidence}"></span>
+                </label>
+                <label>Preferred language
+                    <select th:field="*{preferredLanguage}" required>
+                        <option th:each="language : ${supportedLanguages}" th:value="${language.code()}" th:text="${language.name()}"></option>
+                    </select>
+                    <span class="field-error" th:errors="*{preferredLanguage}"></span>
+                </label>
+                <label>Currency
+                    <select th:field="*{currency}" required>
+                        <option th:each="currency : ${supportedCurrencies}" th:value="${currency.code()}" th:text="${currency.label()}"></option>
+                    </select>
+                    <span class="field-error" th:errors="*{currency}"></span>
+                </label>
+                <label class="full">Special requests
+                    <textarea th:field="*{specialRequests}" rows="4" placeholder="Arrival time, accessibility needs, airport pickup, dietary notes"></textarea>
+                    <span class="field-error" th:errors="*{specialRequests}"></span>
+                </label>
+                <button class="button primary full" type="submit">Continue to checkout</button>
+            </form>
+        </section>
+    </section>
+</main>
+</body>
+</html>

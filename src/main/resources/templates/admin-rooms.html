@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin rooms | LionTech Resorts</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">LionTech Resorts</a>
+    <nav>
+        <a th:href="@{/rooms}">Rooms</a>
+        <a th:href="@{/account/bookings}">My bookings</a>
+        <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="inline-form">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button class="link-button" type="submit">Sign out</button>
+        </form>
+    </nav>
+</header>
+<main class="page-shell">
+    <div class="admin-heading">
+        <div>
+            <p class="eyebrow">Operations</p>
+            <h1>Room catalog</h1>
+            <p class="success" th:if="${successMessage}" th:text="${successMessage}">Success</p>
+        </div>
+        <div class="admin-actions">
+            <a class="button secondary" th:href="@{/admin/rooms/new}">Add room</a>
+            <form th:action="@{/admin/rooms/seed}" method="post" class="inline-form">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="button primary" type="submit">Seed full catalog</button>
+            </form>
+        </div>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+            <tr>
+                <th>Room</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Guests</th>
+                <th>Rate</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="room : ${rooms}">
+                <td th:text="${room.roomNumber}">101</td>
+                <td th:text="${room.name}">Room</td>
+                <td th:text="${room.type}">Type</td>
+                <td th:text="${room.maxGuests}">2</td>
+                <td th:text="${room.currency + ' ' + room.nightlyRate}">USD 329</td>
+                <td><span class="status-pill" th:text="${room.status}">AVAILABLE</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

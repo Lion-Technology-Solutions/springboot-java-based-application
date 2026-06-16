@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in | LionTech Resorts</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">LionTech Resorts</a>
+    <nav>
+        <a th:href="@{/rooms}">Rooms</a>
+        <a th:href="@{/facilities}">Facilities</a>
+        <a th:href="@{/register}">Create account</a>
+    </nav>
+</header>
+<main class="auth-shell">
+    <section class="auth-panel">
+        <p class="eyebrow">Guest access</p>
+        <h1>Sign in</h1>
+        <p class="success" th:if="${successMessage}" th:text="${successMessage}">Success</p>
+        <p class="error" th:if="${param.error}">Invalid email or password.</p>
+        <p class="success" th:if="${param.logout}">You have signed out.</p>
+        <form th:action="@{/login}" method="post" class="form-grid">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <label>Email
+                <input name="username" type="email" autocomplete="email" required>
+            </label>
+            <label>Password
+                <input name="password" type="password" autocomplete="current-password" required>
+            </label>
+            <button class="button primary" type="submit">Sign in</button>
+        </form>
+        <p class="form-note">New guest? <a th:href="@{/register}">Create an account to book.</a></p>
+    </section>
+</main>
+</body>
+</html>

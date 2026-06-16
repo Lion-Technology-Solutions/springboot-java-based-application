@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooms | LionTech Resorts</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">LionTech Resorts</a>
+    <nav>
+        <a th:href="@{/rooms}">Rooms</a>
+        <a th:href="@{/facilities}">Facilities</a>
+        <a sec:authorize="isAuthenticated()" th:href="@{/account/bookings}">My bookings</a>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/rooms}">Admin</a>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/login}">Sign in</a>
+    </nav>
+</header>
+<main class="page-shell">
+    <div class="page-title">
+        <p class="eyebrow">Global booking catalog</p>
+        <h1>Rooms and suites</h1>
+        <p>Choose a room, create or sign into your account, and complete checkout with the LionTech FakePay gateway.</p>
+    </div>
+    <div class="room-grid wide">
+        <article class="room-card" th:each="room : ${rooms}">
+            <img th:src="${room.imageUrl}" th:alt="${room.name}">
+            <div>
+                <p class="room-type" th:text="${room.type}">DELUXE_KING</p>
+                <h2 th:text="${room.name}">Room name</h2>
+                <p th:text="${room.description}">Description</p>
+                <div class="amenity-list">
+                    <span th:each="amenity : ${room.amenities}" th:text="${amenity.name}">Amenity</span>
+                </div>
+                <div class="card-footer">
+                    <span><b th:text="${room.currency + ' ' + room.nightlyRate}">USD 329</b> / night</span>
+                    <a class="button small" th:href="@{/rooms/{id}(id=${room.id})}">View room</a>
+                </div>
+            </div>
+        </article>
+    </div>
+</main>
+</body>
+</html>

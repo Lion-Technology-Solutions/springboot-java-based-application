@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | LionTech Resorts</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">LionTech Resorts</a>
+    <nav>
+        <a th:href="@{/rooms}">Rooms</a>
+        <a th:href="@{/account/bookings}">My bookings</a>
+    </nav>
+</header>
+<main class="page-shell">
+    <section class="checkout-layout">
+        <aside class="summary-card">
+            <p class="eyebrow">Booking summary</p>
+            <h1 th:text="${booking.reference}">LTR-REFERENCE</h1>
+            <p th:text="${booking.room.name}">Room</p>
+            <dl class="spec-list compact-list">
+                <div><dt>Dates</dt><dd th:text="${booking.checkInDate + ' to ' + booking.checkOutDate}">Dates</dd></div>
+                <div><dt>Guests</dt><dd th:text="${booking.guests}">2</dd></div>
+                <div><dt>Status</dt><dd th:text="${booking.status}">PENDING</dd></div>
+                <div><dt>Total</dt><dd th:text="${booking.currency + ' ' + booking.totalAmount}">USD 658</dd></div>
+            </dl>
+            <p class="success" th:if="${latestPayment != null && latestPayment.status.name() == 'APPROVED'}" th:text="${latestPayment.processorMessage}">Approved</p>
+            <p class="error" th:if="${paymentError}" th:text="${paymentError}">Declined</p>
+        </aside>
+        <section class="form-panel">
+            <p class="eyebrow">LionTech FakePay</p>
+            <h1>Secure checkout</h1>
+            <p class="form-note">Use a fake card such as 4242 4242 4242 4242. Any card ending in 0000 is declined for testing.</p>
+            <form th:action="@{/checkout/{reference}(reference=${booking.reference})}" th:object="${paymentRequest}" method="post" class="form-grid two-col">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <label class="full">Cardholder name
+                    <input th:field="*{cardholderName}" autocomplete="cc-name" required>
+                    <span class="field-error" th:errors="*{cardholderName}"></span>
+                </label>
+                <label class="full">Card number
+                    <input th:field="*{cardNumber}" inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242" required>
+                    <span class="field-error" th:errors="*{cardNumber}"></span>
+                </label>
+                <label>Expiry
+                    <input th:field="*{expiry}" placeholder="12/30" autocomplete="cc-exp" required>
+                    <span class="field-error" th:errors="*{expiry}"></span>
+                </label>
+                <label>CVC
+                    <input th:field="*{cvc}" inputmode="numeric" autocomplete="cc-csc" placeholder="123" required>
+                    <span class="field-error" th:errors="*{cvc}"></span>
+                </label>
+                <button class="button primary full" type="submit" th:text="${'Pay ' + booking.currency + ' ' + booking.totalAmount}">Pay</button>
+            </form>
+        </section>
+    </section>
+</main>
+</body>
+</html>

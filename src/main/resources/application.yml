@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: liontech-resorts
+  datasource:
+    url: ${LIONTECH_DB_URL:jdbc:h2:file:./data/liontech-resorts;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH}
+    username: ${LIONTECH_DB_USERNAME:sa}
+    password: ${LIONTECH_DB_PASSWORD:}
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: ${LIONTECH_H2_CONSOLE:false}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+  messages:
+    basename: messages
+    encoding: UTF-8
+  thymeleaf:
+    cache: true
+  web:
+    locale: en
+    locale-resolver: accept-header
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+  error:
+    whitelabel:
+      enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+liontech:
+  seed:
+    demo-data: ${LIONTECH_SEED_DEMO_DATA:true}
+    admin-email: ${LIONTECH_ADMIN_EMAIL:admin@liontechresorts.com}
+    admin-password: ${LIONTECH_ADMIN_PASSWORD:Admin@12345!}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${room.name + ' | LionTech Resorts'}">Room | LionTech Resorts</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">LionTech Resorts</a>
+    <nav>
+        <a th:href="@{/rooms}">Rooms</a>
+        <a th:href="@{/facilities}">Facilities</a>
+        <a sec:authorize="isAuthenticated()" th:href="@{/account/bookings}">My bookings</a>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/login}">Sign in</a>
+    </nav>
+</header>
+<main class="page-shell">
+    <section class="detail-layout">
+        <img class="detail-image" th:src="${room.imageUrl}" th:alt="${room.name}">
+        <div class="detail-panel">
+            <p class="eyebrow" th:text="${room.type}">Room type</p>
+            <h1 th:text="${room.name}">Room name</h1>
+            <p th:text="${room.description}">Description</p>
+            <dl class="spec-list">
+                <div>
+                    <dt>Room</dt>
+                    <dd th:text="${room.roomNumber}">101</dd>
+                </div>
+                <div>
+                    <dt>Guests</dt>
+                    <dd th:text="${room.maxGuests}">2</dd>
+                </div>
+                <div>
+                    <dt>Rate</dt>
+                    <dd th:text="${room.currency + ' ' + room.nightlyRate + ' / night'}">USD 329 / night</dd>
+                </div>
+            </dl>
+            <div class="amenity-list large">
+                <span th:each="amenity : ${room.amenities}" th:text="${amenity.name}">Amenity</span>
+            </div>
+            <a class="button primary" th:href="@{/book/{id}(id=${room.id})}">Book this room</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

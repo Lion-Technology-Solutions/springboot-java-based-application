@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add room | LionTech Resorts</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">LionTech Resorts</a>
+    <nav>
+        <a th:href="@{/admin/rooms}">Admin rooms</a>
+        <a th:href="@{/rooms}">Public rooms</a>
+    </nav>
+</header>
+<main class="page-shell narrow">
+    <section class="form-panel">
+        <p class="eyebrow">Inventory</p>
+        <h1>Add room</h1>
+        <form th:action="@{/admin/rooms}" th:object="${roomForm}" method="post" class="form-grid two-col">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <label>Room number
+                <input th:field="*{roomNumber}" required>
+                <span class="field-error" th:errors="*{roomNumber}"></span>
+            </label>
+            <label>Name
+                <input th:field="*{name}" required>
+                <span class="field-error" th:errors="*{name}"></span>
+            </label>
+            <label>Type
+                <select th:field="*{type}">
+                    <option th:each="type : ${roomTypes}" th:value="${type}" th:text="${type}"></option>
+                </select>
+            </label>
+            <label>Status
+                <select th:field="*{status}">
+                    <option th:each="status : ${roomStatuses}" th:value="${status}" th:text="${status}"></option>
+                </select>
+            </label>
+            <label>Max guests
+                <input th:field="*{maxGuests}" type="number" min="1" max="12" required>
+                <span class="field-error" th:errors="*{maxGuests}"></span>
+            </label>
+            <label>Nightly rate
+                <input th:field="*{nightlyRate}" type="number" min="1" step="0.01" required>
+                <span class="field-error" th:errors="*{nightlyRate}"></span>
+            </label>
+            <label>Currency
+                <input th:field="*{currency}" maxlength="3" required>
+                <span class="field-error" th:errors="*{currency}"></span>
+            </label>
+            <label>Image URL
+                <input th:field="*{imageUrl}" required>
+                <span class="field-error" th:errors="*{imageUrl}"></span>
+            </label>
+            <label class="full">Description
+                <textarea th:field="*{description}" rows="5" required></textarea>
+                <span class="field-error" th:errors="*{description}"></span>
+            </label>
+            <fieldset class="full check-grid">
+                <legend>Amenities</legend>
+                <label th:each="amenity : ${amenities}">
+                    <input type="checkbox" th:field="*{amenityIds}" th:value="${amenity.id}">
+                    <span th:text="${amenity.name}">Amenity</span>
+                </label>
+            </fieldset>
+            <button class="button primary full" type="submit">Save room</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>
