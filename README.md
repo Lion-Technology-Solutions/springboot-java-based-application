@@ -85,24 +85,34 @@ mvn -s maven-settings.example.xml -Pnexus-staging clean deploy
 
 ## Deploy to Tomcat
 
-Set `CATALINA_HOME` to your Tomcat installation directory, then copy the WAR into Tomcat's `webapps` directory:
+Use the deployment helper to clean out any stale exploded app directory, copy the WAR, restart Tomcat, and check the application URL:
 
 ```bash
-export CATALINA_HOME=/opt/tomcat
-test -d "$CATALINA_HOME/webapps" || { echo "Tomcat webapps directory not found: $CATALINA_HOME/webapps"; exit 1; }
-cp target/liontech-resorts.war "$CATALINA_HOME/webapps/"
+mvn clean package
+chmod +x scripts/deploy-tomcat.sh
+./scripts/deploy-tomcat.sh
 ```
 
-On package-managed Linux installations, the Tomcat webapps directory may be `/var/lib/tomcat10/webapps` or `/var/lib/tomcat9/webapps` instead:
+If deploying manually, remove the old exploded directory and WAR before copying the new WAR:
 
 ```bash
+sudo systemctl stop tomcat10
+sudo rm -rf /var/lib/tomcat10/webapps/liontech-resorts /var/lib/tomcat10/webapps/liontech-resorts.war
 sudo cp target/liontech-resorts.war /var/lib/tomcat10/webapps/
+sudo systemctl start tomcat10
 ```
 
-Then start Tomcat and open:
+Then open:
 
 ```text
 http://localhost:8080/liontech-resorts/
+```
+
+If Tomcat still returns 404, the WAR likely failed during startup. Check:
+
+```bash
+sudo journalctl -u tomcat10 -n 120 --no-pager
+sudo tail -n 120 /var/log/tomcat10/catalina.out
 ```
 
 ## Local Run
