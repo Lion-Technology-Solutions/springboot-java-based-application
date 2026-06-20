@@ -97,6 +97,15 @@ If deploying manually, remove the old exploded directory and WAR before copying 
 
 ```bash
 sudo systemctl stop tomcat10
+sudo install -d -o tomcat -g tomcat -m 0750 /var/lib/liontech-resorts/data
+sudo mkdir -p /etc/systemd/system/tomcat10.service.d
+sudo tee /etc/systemd/system/tomcat10.service.d/liontech-resorts.conf >/dev/null <<'EOF'
+[Service]
+Environment="LIONTECH_DB_URL=jdbc:h2:file:/var/lib/liontech-resorts/data/liontech-resorts;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH"
+Environment="LIONTECH_DB_USERNAME=sa"
+Environment="LIONTECH_DB_PASSWORD="
+EOF
+sudo systemctl daemon-reload
 sudo rm -rf /var/lib/tomcat10/webapps/liontech-resorts /var/lib/tomcat10/webapps/liontech-resorts.war
 sudo cp target/liontech-resorts.war /var/lib/tomcat10/webapps/
 sudo systemctl start tomcat10
@@ -149,13 +158,13 @@ export LIONTECH_ADMIN_PASSWORD='replace-with-a-strong-password'
 By default the application uses an H2 file database:
 
 ```text
-./data/liontech-resorts.mv.db
+${java.io.tmpdir}/liontech-resorts/liontech-resorts.mv.db
 ```
 
 Override it with environment variables:
 
 ```bash
-export LIONTECH_DB_URL='jdbc:h2:file:/opt/liontech/data/liontech-resorts'
+export LIONTECH_DB_URL='jdbc:h2:file:/var/lib/liontech-resorts/data/liontech-resorts'
 export LIONTECH_DB_USERNAME='sa'
 export LIONTECH_DB_PASSWORD='change-me'
 ```

@@ -5,6 +5,11 @@ APP_NAME="${APP_NAME:-liontech-resorts}"
 WAR_FILE="${WAR_FILE:-target/${APP_NAME}.war}"
 TOMCAT_SERVICE="${TOMCAT_SERVICE:-tomcat10}"
 CATALINA_HOME="${CATALINA_HOME:-}"
+DATA_DIR="${LIONTECH_DATA_DIR:-/var/lib/liontech-resorts/data}"
+DB_URL="${LIONTECH_DB_URL:-jdbc:h2:file:${DATA_DIR}/liontech-resorts;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH}"
+DB_USERNAME="${LIONTECH_DB_USERNAME:-sa}"
+DB_PASSWORD="${LIONTECH_DB_PASSWORD:-}"
+JAVA_HOME_OVERRIDE="${JAVA_HOME_OVERRIDE:-}"
 
 if [[ ! -f "$WAR_FILE" ]]; then
   echo "WAR file not found: $WAR_FILE"
@@ -24,20 +29,58 @@ else
   exit 1
 fi
 
+if id tomcat >/dev/null 2>&1; then
+  TOMCAT_USER="${TOMCAT_USER:-tomcat}"
+elif id tomcat10 >/dev/null 2>&1; then
+  TOMCAT_USER="${TOMCAT_USER:-tomcat10}"
+else
+  TOMCAT_USER="${TOMCAT_USER:-}"
+fi
+
+if [[ -n "$TOMCAT_USER" ]]; then
+  TOMCAT_GROUP="${TOMCAT_GROUP:-$(id -gn "$TOMCAT_USER")}"
+  sudo install -d -o "$TOMCAT_USER" -g "$TOMCAT_GROUP" -m 0750 "$DATA_DIR"
+else
+  sudo install -d -m 0750 "$DATA_DIR"
+fi
+
+if [[ -z "$JAVA_HOME_OVERRIDE" ]]; then
+  for candidate in /usr/lib/jvm/java-21-openjdk-amd64 /usr/lib/jvm/java-17-openjdk-amd64; do
+    if [[ -x "$candidate/bin/java" ]]; then
+      JAVA_HOME_OVERRIDE="$candidate"
+      break
+    fi
+  done
+fi
+
+service_exists=false
 if command -v systemctl >/dev/null 2>&1 && systemctl list-unit-files "$TOMCAT_SERVICE.service" >/dev/null 2>&1; then
+  service_exists=true
+fi
+
+if [[ "$service_exists" == "true" ]]; then
   sudo systemctl stop "$TOMCAT_SERVICE" || true
+  sudo install -d -m 0755 "/etc/systemd/system/$TOMCAT_SERVICE.service.d"
+  {
+    echo "[Service]"
+    echo "Environment=\"LIONTECH_DB_URL=$DB_URL\""
+    echo "Environment=\"LIONTECH_DB_USERNAME=$DB_USERNAME\""
+    echo "Environment=\"LIONTECH_DB_PASSWORD=$DB_PASSWORD\""
+    if [[ -n "$JAVA_HOME_OVERRIDE" ]]; then
+      echo "Environment=\"JAVA_HOME=$JAVA_HOME_OVERRIDE\""
+    fi
+  } | sudo tee "/etc/systemd/system/$TOMCAT_SERVICE.service.d/liontech-resorts.conf" >/dev/null
+  sudo systemctl daemon-reload
 fi
 
 sudo rm -rf "$WEBAPPS_DIR/$APP_NAME" "$WEBAPPS_DIR/$APP_NAME.war"
 sudo cp "$WAR_FILE" "$WEBAPPS_DIR/$APP_NAME.war"
 
-if id tomcat >/dev/null 2>&1; then
-  sudo chown tomcat:tomcat "$WEBAPPS_DIR/$APP_NAME.war"
-elif id tomcat10 >/dev/null 2>&1; then
-  sudo chown tomcat10:tomcat10 "$WEBAPPS_DIR/$APP_NAME.war"
+if [[ -n "${TOMCAT_USER:-}" ]]; then
+  sudo chown "$TOMCAT_USER:$TOMCAT_GROUP" "$WEBAPPS_DIR/$APP_NAME.war"
 fi
 
-if command -v systemctl >/dev/null 2>&1 && systemctl list-unit-files "$TOMCAT_SERVICE.service" >/dev/null 2>&1; then
+if [[ "$service_exists" == "true" ]]; then
   sudo systemctl start "$TOMCAT_SERVICE"
 fi
 
