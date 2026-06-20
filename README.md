@@ -85,10 +85,18 @@ mvn -s maven-settings.example.xml -Pnexus-staging clean deploy
 
 ## Deploy to Tomcat
 
-Copy the WAR into Tomcat's `webapps` directory:
+Set `CATALINA_HOME` to your Tomcat installation directory, then copy the WAR into Tomcat's `webapps` directory:
 
 ```bash
-cp target/liontech-resorts.war $CATALINA_HOME/webapps/
+export CATALINA_HOME=/opt/tomcat
+test -d "$CATALINA_HOME/webapps" || { echo "Tomcat webapps directory not found: $CATALINA_HOME/webapps"; exit 1; }
+cp target/liontech-resorts.war "$CATALINA_HOME/webapps/"
+```
+
+On package-managed Linux installations, the Tomcat webapps directory may be `/var/lib/tomcat10/webapps` or `/var/lib/tomcat9/webapps` instead:
+
+```bash
+sudo cp target/liontech-resorts.war /var/lib/tomcat10/webapps/
 ```
 
 Then start Tomcat and open:
