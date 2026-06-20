@@ -38,6 +38,51 @@ The deployable WAR is created at:
 target/liontech-resorts.war
 ```
 
+## SonarQube Analysis
+
+The Maven build includes the SonarQube scanner plugin. Provide the SonarQube URL and token from your shell or CI secret store:
+
+```bash
+export SONAR_HOST_URL='http://sonarqube.example.com:9000'
+export SONAR_TOKEN='replace-with-sonarqube-token'
+mvn clean verify sonar:sonar \
+  -Dsonar.host.url="$SONAR_HOST_URL" \
+  -Dsonar.token="$SONAR_TOKEN"
+```
+
+The project key is configured as:
+
+```text
+liontech-resorts
+```
+
+## Publish WAR to Nexus
+
+The POM is configured with Maven `distributionManagement` repository IDs:
+
+```text
+nexus-releases
+nexus-snapshots
+```
+
+Copy `maven-settings.example.xml` to your Maven settings location or pass it with `-s`, then provide Nexus credentials and repository URLs from environment variables:
+
+```bash
+export NEXUS_USERNAME='deployment-user'
+export NEXUS_PASSWORD='replace-with-nexus-password'
+export NEXUS_RELEASES_URL='http://nexus.example.com:8081/repository/maven-releases/'
+export NEXUS_SNAPSHOTS_URL='http://nexus.example.com:8081/repository/maven-snapshots/'
+
+mvn -s maven-settings.example.xml clean deploy
+```
+
+For a Nexus staging repository, also provide the base Nexus URL and enable the profile:
+
+```bash
+export NEXUS_URL='http://nexus.example.com:8081/'
+mvn -s maven-settings.example.xml -Pnexus-staging clean deploy
+```
+
 ## Deploy to Tomcat
 
 Copy the WAR into Tomcat's `webapps` directory:
